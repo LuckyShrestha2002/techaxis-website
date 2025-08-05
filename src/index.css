@@ -1,3 +1,7 @@
+/* src/index.css */
+/* Mantine styles must be imported first */
+@import '@mantine/core/styles.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,3 +1,4 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -6,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {},
+  },
+  corePlugins: {
+    preflight: false, // <-- This is the crucial line you were missing
   },
   plugins: [],
 };
