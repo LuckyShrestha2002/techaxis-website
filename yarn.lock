@@ -3413,7 +3413,7 @@ react-remove-scroll@^2.6.2:
     use-callback-ref "^1.3.3"
     use-sidecar "^1.1.3"
 
-react-router-dom@^7.6.2:
+react-router-dom@^7.7.1:
   version "7.7.1"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-7.7.1.tgz"
   integrity sha512-bavdk2BA5r3MYalGKZ01u8PGuDBloQmzpBZVhDLrOOv1N943Wq6dcM9GhB3x8b7AbqPMEezauv4PeGkAJfy7FQ==
