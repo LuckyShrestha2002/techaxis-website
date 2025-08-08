@@ -1,20 +1,33 @@
-// src/pages/AdminDashboard.tsx
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Box, Card, Group, Text, Title, Button, TextInput, Badge, Image, SimpleGrid, Stack, Center, Container, Modal } from '@mantine/core';
+import { Box, Card, Group, Text, Title, Button, TextInput, Badge, Image, SimpleGrid, Stack, Center, Container, Modal, NumberInput } from '@mantine/core';
 import { useAuth } from '../AuthContext';
 
+// Updated interface to include all fields
 interface Course {
   id: number;
   name: string;
   description: string;
   imageUrl: string;
+  price: number;
+  duration: string;
+  instructor: string;
 }
 
 export function AdminDashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [newCourse, setNewCourse] = useState({ name: '', description: '', imageUrl: '' });
+  
+  // Updated initial state for new course
+  const [newCourse, setNewCourse] = useState({ 
+    name: '', 
+    description: '', 
+    imageUrl: '',
+    price: 0,
+    duration: '',
+    instructor: '',
+  });
+
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -46,6 +59,10 @@ export function AdminDashboard() {
     const { name, value } = e.target;
     setNewCourse({ ...newCourse, [name]: value });
   };
+  
+  const handlePriceChange = (value: number) => {
+    setNewCourse({ ...newCourse, price: value });
+  };
 
   const handleCreateCourse = async (e: FormEvent) => {
     e.preventDefault();
@@ -64,7 +81,7 @@ export function AdminDashboard() {
       }
 
       await fetchCourses();
-      setNewCourse({ name: '', description: '', imageUrl: '' });
+      setNewCourse({ name: '', description: '', imageUrl: '', price: 0, duration: '', instructor: '' });
     } catch (err: any) {
       setError(err.message);
     }
@@ -105,6 +122,12 @@ export function AdminDashboard() {
       setEditingCourse({ ...editingCourse, [name]: value });
     }
   };
+  
+  const handleUpdatePriceChange = (value: number) => {
+    if (editingCourse) {
+      setEditingCourse({ ...editingCourse, price: value });
+    }
+  };
 
   const handleUpdateCourse = async (e: FormEvent) => {
     e.preventDefault();
@@ -112,7 +135,7 @@ export function AdminDashboard() {
 
     try {
       const response = await fetch(`http://localhost:3000/api/courses/${editingCourse.id}`, {
-        method: 'PUT',
+        method: 'PATCH', // Changed from 'PUT' to 'PATCH' to match NestJS standard
         headers: {
           'Content-Type': 'application/json',
         },
@@ -168,7 +191,7 @@ export function AdminDashboard() {
                   />
                   <TextInput
                     label="Description"
-                    placeholder="e.g., 3 Months"
+                    placeholder="e.g., Our course provide...."
                     name="description"
                     value={newCourse.description}
                     onChange={handleInputChange}
@@ -179,6 +202,32 @@ export function AdminDashboard() {
                     placeholder="https://..."
                     name="imageUrl"
                     value={newCourse.imageUrl}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <NumberInput
+                    label="Price"
+                    placeholder="e.g., 99.99"
+                    name="price"
+                    value={newCourse.price}
+                    onChange={handlePriceChange}
+                    precision={2}
+                    min={0}
+                    required
+                  />
+                  <TextInput
+                    label="Duration"
+                    placeholder="e.g., 3 Months"
+                    name="duration"
+                    value={newCourse.duration}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <TextInput
+                    label="Instructor"
+                    placeholder="e.g., John Doe"
+                    name="instructor"
+                    value={newCourse.instructor}
                     onChange={handleInputChange}
                     required
                   />
@@ -209,8 +258,17 @@ export function AdminDashboard() {
               </Card.Section>
               <Group position="apart" mt="md" mb="xs">
                 <Text weight={500}>{course.name}</Text>
-                <Badge>{course.description}</Badge>
+                <Badge>{course.duration}</Badge>
               </Group>
+              <Text size="sm" color="dimmed">
+                Price: <b className='text-blue-600'>${course.price}</b>
+              </Text>
+              <Text size="sm" color="dimmed">
+                Instructor: <b className='text-blue-600'>{course.instructor}</b>
+              </Text>
+              <Text size="sm" color="dimmed" mt="xs">
+                {course.description}
+              </Text>
               <Group grow mt="md">
                 <Button variant="light" color="blue" onClick={() => handleEditClick(course)}>Edit</Button>
                 <Button
@@ -247,6 +305,29 @@ export function AdminDashboard() {
                   label="Image URL"
                   name="imageUrl"
                   value={editingCourse.imageUrl}
+                  onChange={handleUpdateChange}
+                  required
+                />
+                 <NumberInput
+                  label="Price"
+                  name="price"
+                  value={editingCourse.price}
+                  onChange={handleUpdatePriceChange}
+                  precision={2}
+                  min={0}
+                  required
+                />
+                <TextInput
+                  label="Duration"
+                  name="duration"
+                  value={editingCourse.duration}
+                  onChange={handleUpdateChange}
+                  required
+                />
+                <TextInput
+                  label="Instructor"
+                  name="instructor"
+                  value={editingCourse.instructor}
                   onChange={handleUpdateChange}
                   required
                 />

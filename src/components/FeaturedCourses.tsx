@@ -1,6 +1,6 @@
 // src/components/FeaturedCourses.tsx
 import { Box, Card, Group, Image, Text, Title, Button, Skeleton } from '@mantine/core';
-import { IconCircleDot, IconPlayerPlay } from '@tabler/icons-react';
+import { IconPlayerPlay } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -94,12 +94,23 @@ export function FeaturedCourses() {
                 <Title order={4} className="text-lg font-bold mb-2 text-gray-800">
                   {course.name}
                 </Title>
-                <Group className="justify-center gap-2">
-                  <IconCircleDot size={14} className="text-blue-600" />
-                  <Text size="sm" className="text-gray-500">
-                    {course.description}
-                  </Text>
-                </Group>
+                
+                {/* Description is now its own text block below the title */}
+                <Text 
+                  size="sm" 
+                  className="text-gray-500" 
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    height: '2.8rem'
+                  }}
+                >
+                  {course.description}
+                </Text>
+
               </Box>
               <Button 
                 onClick={() => navigate(`/course/${course.id}`)} 
