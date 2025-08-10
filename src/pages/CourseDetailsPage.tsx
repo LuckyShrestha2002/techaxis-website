@@ -9,7 +9,7 @@ interface Course {
   description: string;
   imageUrl: string;
   price: number;
-  duration: string;
+  duration: number; // number type
   instructor: string;
 }
 
@@ -28,6 +28,7 @@ export function CourseDetailsPage() {
           throw new Error('Course not found.');
         }
         const data = await response.json();
+        data.duration = Number(data.duration);
         setCourse(data);
       } catch (err: any) {
         setError(err.message);
@@ -88,7 +89,6 @@ export function CourseDetailsPage() {
       </Button>
 
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-        {/* Left Column: Image and Details Card */}
         <Box>
           <Card shadow="sm" p="lg" radius="md" mb="lg">
             <Card.Section>
@@ -97,39 +97,36 @@ export function CourseDetailsPage() {
             <Center mt="md" mb="xs">
               <Title order={2}>{course.name}</Title>
             </Center>
-            
-            {/* Updated Details Section */}
-            <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl" spacing="xl">
-                {/* Price */}
-                <Group wrap="nowrap" gap="xs">
-                    <IconCoin size={24} className="text-blue-600" />
-                    <Stack gap={0}>
-                        <Text size="xs" color="dimmed">Price</Text>
-                        <Text weight={500}>${course.price}</Text>
-                    </Stack>
-                </Group>
-                
-                {/* Duration */}
-                <Group wrap="nowrap" gap="xs">
-                    <IconClock size={24} className="text-blue-600" />
-                    <Stack gap={0}>
-                        <Text size="xs" color="dimmed">Duration</Text>
-                        <Text weight={500}>{course.duration}</Text>
-                    </Stack>
-                </Group>
-                
-                {/* Instructor */}
-                <Group wrap="nowrap" gap="xs">
-                    <IconUser size={24} className="text-blue-600" />
-                    <Stack gap={0}>
-                        <Text size="xs" color="dimmed">Instructor</Text>
-                        <Text weight={500}>{course.instructor}</Text>
-                    </Stack>
-                </Group>
-            </SimpleGrid>
-            {/* End of Updated Details Section */}
 
+            <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl" spacing="xl">
+              <Group wrap="nowrap" gap="xs">
+                <IconCoin size={24} className="text-blue-600" />
+                <Stack gap={0}>
+                  <Text size="xs" color="dimmed">Price</Text>
+                  <Text weight={500}>${course.price}</Text>
+                </Stack>
+              </Group>
+
+              <Group wrap="nowrap" gap="xs">
+                <IconClock size={24} className="text-blue-600" />
+                <Stack gap={0}>
+                  <Text size="xs" color="dimmed">Duration</Text>
+                  <Text weight={500}>
+                    {course.duration} {course.duration === 1 ? 'month' : 'months'}
+                  </Text>
+                </Stack>
+              </Group>
+
+              <Group wrap="nowrap" gap="xs">
+                <IconUser size={24} className="text-blue-600" />
+                <Stack gap={0}>
+                  <Text size="xs" color="dimmed">Instructor</Text>
+                  <Text weight={500}>{course.instructor}</Text>
+                </Stack>
+              </Group>
+            </SimpleGrid>
           </Card>
+
           <Center>
             <Button
               size="lg"
@@ -141,7 +138,6 @@ export function CourseDetailsPage() {
           </Center>
         </Box>
 
-        {/* Right Column: Description */}
         <Card shadow="sm" p="lg" radius="md">
           <Title order={3} mb="md">Course Description</Title>
           <Text color="dimmed" style={{ lineHeight: 1.6 }}>

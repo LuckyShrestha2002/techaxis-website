@@ -2,14 +2,13 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { Box, Card, Group, Text, Title, Button, TextInput, Badge, Image, SimpleGrid, Stack, Center, Container, Modal, NumberInput } from '@mantine/core';
 import { useAuth } from '../AuthContext';
 
-// Updated interface to include all fields
 interface Course {
   id: number;
   name: string;
   description: string;
   imageUrl: string;
   price: number;
-  duration: string;
+  duration: number;
   instructor: string;
 }
 
@@ -17,14 +16,13 @@ export function AdminDashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Updated initial state for new course
+
   const [newCourse, setNewCourse] = useState({ 
     name: '', 
     description: '', 
     imageUrl: '',
     price: 0,
-    duration: '',
+    duration: 0,
     instructor: '',
   });
 
@@ -61,18 +59,26 @@ export function AdminDashboard() {
   };
   
   const handlePriceChange = (value: number) => {
-    setNewCourse({ ...newCourse, price: value });
+    setNewCourse({ ...newCourse, price: value ?? 0 });
+  };
+
+  const handleDurationChange = (value: number) => {
+    setNewCourse({ ...newCourse, duration: value ?? 0 });
   };
 
   const handleCreateCourse = async (e: FormEvent) => {
     e.preventDefault();
     try {
+      const coursePayload = {
+        ...newCourse,
+        price: Number(newCourse.price) || 0,
+        duration: Number(newCourse.duration) || 0,
+      };
+
       const response = await fetch('http://localhost:3000/api/courses', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newCourse),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(coursePayload),
       });
 
       if (!response.ok) {
@@ -81,7 +87,7 @@ export function AdminDashboard() {
       }
 
       await fetchCourses();
-      setNewCourse({ name: '', description: '', imageUrl: '', price: 0, duration: '', instructor: '' });
+      setNewCourse({ name: '', description: '', imageUrl: '', price: 0, duration: 0, instructor: '' });
     } catch (err: any) {
       setError(err.message);
     }
@@ -125,7 +131,13 @@ export function AdminDashboard() {
   
   const handleUpdatePriceChange = (value: number) => {
     if (editingCourse) {
-      setEditingCourse({ ...editingCourse, price: value });
+      setEditingCourse({ ...editingCourse, price: value ?? 0 });
+    }
+  };
+
+  const handleUpdateDurationChange = (value: number) => {
+    if (editingCourse) {
+      setEditingCourse({ ...editingCourse, duration: value ?? 0 });
     }
   };
 
@@ -134,12 +146,16 @@ export function AdminDashboard() {
     if (!editingCourse) return;
 
     try {
+      const coursePayload = {
+        ...editingCourse,
+        price: Number(editingCourse.price) || 0,
+        duration: Number(editingCourse.duration) || 0,
+      };
+
       const response = await fetch(`http://localhost:3000/api/courses/${editingCourse.id}`, {
-        method: 'PATCH', // Changed from 'PUT' to 'PATCH' to match NestJS standard
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editingCourse),
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(coursePayload),
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -191,7 +207,7 @@ export function AdminDashboard() {
                   />
                   <TextInput
                     label="Description"
-                    placeholder="e.g., Our course provide...."
+                    placeholder="e.g., Our course provides..."
                     name="description"
                     value={newCourse.description}
                     onChange={handleInputChange}
@@ -215,12 +231,13 @@ export function AdminDashboard() {
                     min={0}
                     required
                   />
-                  <TextInput
-                    label="Duration"
-                    placeholder="e.g., 3 Months"
+                  <NumberInput
+                    label="Duration (months)"
+                    placeholder="e.g., 10"
                     name="duration"
                     value={newCourse.duration}
-                    onChange={handleInputChange}
+                    onChange={handleDurationChange}
+                    min={1}
                     required
                   />
                   <TextInput
@@ -258,7 +275,7 @@ export function AdminDashboard() {
               </Card.Section>
               <Group position="apart" mt="md" mb="xs">
                 <Text weight={500}>{course.name}</Text>
-                <Badge>{course.duration}</Badge>
+                <Badge>{course.duration} {course.duration === 1 ? 'month' : 'months'}</Badge>
               </Group>
               <Text size="sm" color="dimmed">
                 Price: <b className='text-blue-600'>${course.price}</b>
@@ -308,7 +325,7 @@ export function AdminDashboard() {
                   onChange={handleUpdateChange}
                   required
                 />
-                 <NumberInput
+                <NumberInput
                   label="Price"
                   name="price"
                   value={editingCourse.price}
@@ -317,11 +334,12 @@ export function AdminDashboard() {
                   min={0}
                   required
                 />
-                <TextInput
-                  label="Duration"
+                <NumberInput
+                  label="Duration (months)"
                   name="duration"
                   value={editingCourse.duration}
-                  onChange={handleUpdateChange}
+                  onChange={handleUpdateDurationChange}
+                  min={1}
                   required
                 />
                 <TextInput

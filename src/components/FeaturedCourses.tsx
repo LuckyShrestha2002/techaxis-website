@@ -4,7 +4,7 @@ import { IconPlayerPlay } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Define the shape of the data we expect from the API
+
 interface Course {
   id: number;
   name: string;
@@ -125,7 +125,7 @@ export function FeaturedCourses() {
           ))}
         </div>
         <div className="mt-12 text-center">
-          <Button 
+          <Button
             size="lg" 
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-8 py-3 transition-colors"
             onClick={() => navigate('/')} 
