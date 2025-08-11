@@ -6,7 +6,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { LoginPage } from './pages/LoginPage';
 import { AuthProvider } from './AuthContext';
 import { ProtectedRoute } from './ProtectedRoute';
-import { CourseDetailsPage } from './pages/CourseDetailsPage'; // <<< New import
+import { CourseDetailsPage } from './pages/CourseDetailsPage'; 
 
 function App() {
   return (
